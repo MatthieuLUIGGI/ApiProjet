@@ -11,7 +11,8 @@ namespace VLCAIAPI.Controllers
     public class ShopController : ControllerBase
     {
 
-        string _connectionString = "Server=192.168.0.158,9999;Database=VLCAI;user=reader;Password=reader;TrustServerCertificate=true";
+        string _connectionString = "Server=.,9595;Database=VLCAI;user=sa;Password=Password123456789;TrustServerCertificate=true";
+        //"Server=192.168.30.7,5432;Database=mydatabase;user=myuser;Password=myuser;Encrypt=True;TrustServerCertificate=true";
         SqlConnection _connection;
 
         public ShopController()
@@ -26,31 +27,30 @@ namespace VLCAIAPI.Controllers
             _connection.Open();
 
             // Définir la requête
-
             string queryString = "SELECT * FROM Commerces";
 
             // Exécuter la requête
-
             SqlCommand command = new(queryString, _connection);
             SqlDataReader reader = command.ExecuteReader();
 
             List<Commerce> listeCommerces = new List<Commerce>();
             while (reader.Read())
             {
-
                 Commerce commerce = new Commerce();
-                commerce.X = (decimal)reader[0];
-                commerce.Y = (decimal)reader[1];
-                commerce.osm_id = (long)reader[2];
-                commerce.type = (string)reader[3];
-                commerce.name = (string)reader[4];
-                commerce.wheelchair = (string)reader[5];
-                commerce.opening_hours = (string)reader[6];
-                commerce.website = (string)reader[7];
-                commerce.phone = (string)reader[8];
-                commerce.email = (string)reader[9];
-                commerce.address = (string)reader[10];
-                commerce.code_insee = (string)reader[11];
+
+                commerce.X = reader.IsDBNull(0) ? 0 : reader.GetDecimal(0); // Par défaut, 0 si NULL
+                commerce.Y = reader.IsDBNull(1) ? 0 : reader.GetDecimal(1);
+                commerce.osm_id = reader.IsDBNull(2) ? 0 : reader.GetInt64(2);
+                commerce.type = reader.IsDBNull(3) ? "Non renseigné" : reader.GetString(3);
+                commerce.name = reader.IsDBNull(4) ? "Non renseigné" : reader.GetString(4);
+                commerce.wheelchair = reader.IsDBNull(5) ? "Non renseigné" : reader.GetString(5);
+                commerce.opening_hours = reader.IsDBNull(6) ? "Non renseigné" : reader.GetString(6);
+                commerce.website = reader.IsDBNull(7) ? "Non renseigné" : reader.GetString(7);
+                commerce.phone = reader.IsDBNull(8) ? "Non renseigné" : reader.GetString(8);
+                commerce.email = reader.IsDBNull(9) ? "Non renseigné" : reader.GetString(9);
+                commerce.address = reader.IsDBNull(10) ? "Non renseigné" : reader.GetString(10);
+                commerce.code_insee = reader.IsDBNull(11) ? "Non renseigné" : reader.GetString(11);
+
                 listeCommerces.Add(commerce);
             }
 
