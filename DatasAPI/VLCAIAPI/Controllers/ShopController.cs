@@ -12,7 +12,7 @@ namespace VLCAIAPI.Controllers
     {
 
         string _connectionString = "Server=.,9595;Database=VLCAI;user=sa;Password=Password123456789;TrustServerCertificate=true";
-        //"Server=192.168.30.7,5432;Database=mydatabase;user=myuser;Password=myuser;Encrypt=True;TrustServerCertificate=true";
+        //string _connectionString = "Server=192.168.30.7,5432;Database=mydatabase;user=myuser;Password=myuser;Encrypt=True;TrustServerCertificate=true";
         SqlConnection _connection;
 
         public ShopController()
@@ -20,9 +20,9 @@ namespace VLCAIAPI.Controllers
             _connection = new SqlConnection(_connectionString);
         }
 
-        // GET: api/<ValuesController>
+        //GET: api/<ValuesController>
         [HttpGet]
-        public List<Commerce> Get()
+        public List<Commerces> Get()
         {
             _connection.Open();
 
@@ -33,10 +33,10 @@ namespace VLCAIAPI.Controllers
             SqlCommand command = new(queryString, _connection);
             SqlDataReader reader = command.ExecuteReader();
 
-            List<Commerce> listeCommerces = new List<Commerce>();
+            List<Commerces> listeCommerces = new List<Commerces>();
             while (reader.Read())
             {
-                Commerce commerce = new Commerce();
+                Commerces commerce = new Commerces();
 
                 commerce.X = reader.IsDBNull(0) ? 0 : reader.GetDecimal(0); // Par défaut, 0 si NULL
                 commerce.Y = reader.IsDBNull(1) ? 0 : reader.GetDecimal(1);
@@ -61,10 +61,43 @@ namespace VLCAIAPI.Controllers
         }
 
         // GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("search")]
+        public List<Commerces> Get(string name)
         {
-            return "value";
+            _connection.Open();
+
+            // Définir la requête
+            string queryString = "SELECT * FROM Commerces WHERE name LIKE '%" + name + "%'";
+
+            // Exécuter la requête
+            SqlCommand command = new(queryString, _connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            List<Commerces> listeCommerces = new List<Commerces>();
+            while (reader.Read())
+            {
+                Commerces commerce = new Commerces();
+
+                commerce.X = reader.IsDBNull(0) ? 0 : reader.GetDecimal(0); // Par défaut, 0 si NULL
+                commerce.Y = reader.IsDBNull(1) ? 0 : reader.GetDecimal(1);
+                commerce.osm_id = reader.IsDBNull(2) ? 0 : reader.GetInt64(2);
+                commerce.type = reader.IsDBNull(3) ? "Non renseigné" : reader.GetString(3);
+                commerce.name = reader.IsDBNull(4) ? "Non renseigné" : reader.GetString(4);
+                commerce.wheelchair = reader.IsDBNull(5) ? "Non renseigné" : reader.GetString(5);
+                commerce.opening_hours = reader.IsDBNull(6) ? "Non renseigné" : reader.GetString(6);
+                commerce.website = reader.IsDBNull(7) ? "Non renseigné" : reader.GetString(7);
+                commerce.phone = reader.IsDBNull(8) ? "Non renseigné" : reader.GetString(8);
+                commerce.email = reader.IsDBNull(9) ? "Non renseigné" : reader.GetString(9);
+                commerce.address = reader.IsDBNull(10) ? "Non renseigné" : reader.GetString(10);
+                commerce.code_insee = reader.IsDBNull(11) ? "Non renseigné" : reader.GetString(11);
+
+                listeCommerces.Add(commerce);
+            }
+
+            reader.Close();
+            _connection.Close();
+
+            return listeCommerces;
         }
 
         // POST api/<ValuesController>
@@ -75,8 +108,16 @@ namespace VLCAIAPI.Controllers
 
         // PUT api/<ValuesController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public void Put(BigInteger id, string x, string y)
         {
+            _connection.Open();
+
+            // Définir la requête
+            string queryString = "UPDATE Commerces SET x = '"+ x +"', y= '"+y+"' WHERE osm_id='"+id+"'";
+
+            // Exécuter la requête
+            SqlCommand command = new(queryString, _connection);
+            command.ExecuteNonQuery();
         }
 
         // DELETE api/<ValuesController>/5

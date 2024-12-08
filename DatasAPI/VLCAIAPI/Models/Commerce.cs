@@ -1,8 +1,24 @@
-﻿using System.Numerics;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace VLCAIAPI.Models
 {
-    public class Commerce
+    public class MyDbContext : DbContext
+    {
+        public DbSet<Commerces> Commerces { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Commerces>()
+                .HasNoKey() // Indique que cette entité n'a pas de clé primaire
+                .ToTable("Commerces"); // Le nom de la table dans la base de données
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=.,9595;Database=VLCAI;user=sa;Password=Password123456789;TrustServerCertificate=true");
+        }
+    }
+    public class Commerces
     {
         public decimal X { get; set; }
         public decimal Y { get; set; }
