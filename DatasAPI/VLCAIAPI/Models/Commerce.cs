@@ -20,6 +20,7 @@ namespace VLCAIAPI.Models
     }
     public class Commerces
     {
+        public int Id { get; set; }
         public decimal X { get; set; }
         public decimal Y { get; set; }
         public long osm_id { get; set; }
